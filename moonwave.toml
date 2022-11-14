@@ -1,0 +1,16 @@
+title = "TableKit"
+gitRepoUrl = "https://github.com/ffrostflame/bridgenet/"
+
+gitSourceBranch = "main"
+changelog = false
+
+[docusaurus]
+projectName = "TableKit"
+tagline = "Updated, luau-specific table library with real-world use cases."
+
+[footer]
+style = "dark"
+
+[home]
+enabled = true
+includeReadme = false
