@@ -29,8 +29,8 @@ local TableKit = {}
 	@param tableToClone table
 	@return table
 ]=]
-function TableKit.DeepCopy<original>(tableToClone: original): original
-	local result: original = {}
+function TableKit.DeepCopy<T>(tableToClone: T): T
+	local result: T = {}
 
 	for key: number, v in tableToClone do
 		if typeof(v) == "table" then
@@ -96,7 +96,7 @@ end
 	@param dictionary table
 	@return table
 ]=]
-function TableKit.Keys<keys>(dictionary: { [any]: any }): { keys }
+function TableKit.Keys<T>(dictionary: { [T]: any }): { T }
 	local keyArray = {}
 
 	for key, _ in dictionary do
@@ -123,10 +123,10 @@ end
 	@param dictionary table
 	@return table
 ]=]
-function TableKit.Values<values>(dict: { [any]: any }): { values }
+function TableKit.Values<T>(dictionary: { [any]: T }): { T }
 	local valueArray = {}
 
-	for _, value in dict do
+	for _, value in dictionary do
 		table.insert(valueArray, value)
 	end
 
@@ -144,10 +144,11 @@ end
 	```
 
 	@within TableKit
-	@param dictionary table
+	@param array1 table
+	@param array2 table
 	@return table
 ]=]
-function TableKit.MergeArray<member>(array1: { [number]: member }, array2: { [number]: member }): { [number]: member }
+function TableKit.MergeArray<T>(array1: { [number]: T }, array2: { [number]: T }): { [number]: T }
 	local newTable = table.clone(array1)
 
 	for _, value in array2 do
@@ -173,16 +174,17 @@ end
 		A = 9,
 		B = 8,
 		C = {},
-}
+	}
 	
 	print(TableKit.Reconcile(toReconcile, template)) -- prints { A = 9, B = 8, C = { D = "" }
 	```
 
 	@within TableKit
-	@param dictionary table
+	@param original table
+	@param reconcile table
 	@return table
 ]=]
-function TableKit.Reconcile<reconcileInto>(original: { [any]: any }, reconcile: reconcileInto): reconcileInto
+function TableKit.Reconcile<T>(original: { [any]: any }, reconcile: T): T
 	local tbl = table.clone(original)
 
 	for key, value in reconcile do
@@ -262,7 +264,7 @@ end
 	```
 
 	@within TableKit
-	@param value {}
+	@param obj {}
 	@return string
 ]=]
 function TableKit.ToString(obj: { [any]: any }): string
@@ -324,15 +326,16 @@ end
 	```
 
 	@within TableKit
-	@param value any
+	@param arr { [number]: any }
+	@param callback (value: value) -> boolean
 	@return { [number]: any }
 ]=]
-function TableKit.Filter<value>(arr: { [number]: value }, callback: (value: value) -> boolean)
-	local tbl = table.clone(arr)
+function TableKit.Filter<T>(arr: { [number]: T }, callback: (value: T) -> boolean)
+	local tbl = {}
 
-	for index, value in arr do
+	for _, value in arr do
 		if callback(value) then
-			table.remove(tbl, index)
+			table.insert(tbl, value)
 		end
 	end
 
@@ -375,8 +378,7 @@ end
 	```
 	
 	@within TableKit
-	@param tbl {}
-	@param callback (value) -> boolean
+	@param tbl table
 	@return boolean
 ]=]
 function TableKit.IsFlat(tbl: { [any]: any }): boolean
@@ -401,11 +403,11 @@ end
 	```
 	
 	@within TableKit
-	@param arr {}
+	@param array {}
 	@param callback (value) -> boolean
 	@return boolean
 ]=]
-function TableKit.Every<value>(array: { [number]: value }, callback: (value) -> boolean): (boolean, any)
+function TableKit.Every<T>(array: { [number]: value }, callback: (value) -> boolean): (boolean, number)
 	for index, value in array do
 		if not callback(value) then
 			return false, index
@@ -430,16 +432,11 @@ end
 	
 	@within TableKit
 	@param dictionary table
-	@param value any
+	@param key any
 	@return boolean
 ]=]
-function TableKit.HasKey(dictionary: { [any]: any }, key: any)
-	for k, _ in dictionary do
-		if k == key then
-			return true
-		end
-	end
-	return false
+function TableKit.HasKey<T>(dictionary: { [T]: any }, key: T)
+	return dictionary[key] ~= nil
 end
 
 --[=[
