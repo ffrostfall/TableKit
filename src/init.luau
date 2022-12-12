@@ -1,8 +1,3 @@
---[=[
-	@class TableKit
-	
-	The container for everything inside of TableKit.
-]=]
 local TableKit = {}
 
 --[=[
@@ -29,18 +24,16 @@ local TableKit = {}
 	@param tableToClone table
 	@return table
 ]=]
-function TableKit.DeepCopy<T>(tableToClone: T): T
-	local result: T = {}
-
-	for key: number, v in tableToClone do
-		if typeof(v) == "table" then
-			result[key] = TableKit.DeepCopy(v)
+function TableKit.DeepCopy<T>(tableToClone): T
+	local clone = table.clone(tableToClone)
+	for index, value in clone do
+		if type(value) == "table" then
+			clone[index] = TableKit.DeepCopy(value)
 		else
-			result[key] = v
+			clone[index] = value
 		end
 	end
-
-	return result
+	return clone
 end
 
 --[=[
@@ -99,7 +92,7 @@ end
 function TableKit.Keys<T>(dictionary: { [T]: any }): { T }
 	local keyArray = {}
 
-	for key, _ in dictionary do
+	for key in dictionary do
 		table.insert(keyArray, key)
 	end
 
@@ -134,13 +127,13 @@ function TableKit.Values<T>(dictionary: { [any]: T }): { T }
 end
 
 --[=[
-	Merges two arrays. array2 will be added to array1- this means that the indexes of array1 will be the same.
+	Merges two arrays; array2 will be added to array1- this means that the indexes of array1 will be the same.
 	
 	```lua
 	local FirstArray = {"A", "B", "C", "D"}
 	local SecondArray = {"E", "F", "G", "H"}
 	
-	print(TableKit.MergeArray(FirstArray, SecondArray)) -- prints {"A", "B", "C", D", "E", "F", "G", "H"}
+	print(TableKit.MergeArrays(FirstArray, SecondArray)) -- prints {"A", "B", "C", D", "E", "F", "G", "H"}
 	```
 
 	@within TableKit
@@ -148,14 +141,10 @@ end
 	@param array2 table
 	@return table
 ]=]
-function TableKit.MergeArray<T>(array1: { [number]: T }, array2: { [number]: T }): { [number]: T }
-	local newTable = table.clone(array1)
-
-	for _, value in array2 do
-		table.insert(newTable, value)
-	end
-
-	return newTable
+function TableKit.MergeArrays(a, b)
+	local result = table.clone(a)
+	table.move(b, 1, #b, #result + 1, result)
+	return result
 end
 
 --[=[
@@ -207,7 +196,7 @@ function TableKit.Reconcile<T>(original: { [any]: any }, reconcile: T): T
 end
 
 --[=[
-	Detects if a table is an array, meaning purely number indexes.
+	Detects if a table is an array, meaning purely number indexes and indexes starting at 1.
 	
 	```lua
 	local Array = {"A", "B", "C", "D"}
@@ -222,7 +211,7 @@ end
 ]=]
 function TableKit.IsArray(mysteryTable: { [any]: any }): boolean
 	local count = 0
-	for _, _ in mysteryTable do
+	for _ in mysteryTable do
 		count += 1
 	end
 	return count == #mysteryTable
@@ -243,7 +232,11 @@ end
 	@return boolean
 ]=]
 function TableKit.IsDictionary(mysteryTable: { [any]: any }): boolean
-	return not TableKit.IsArray(mysteryTable)
+	local count = 0
+	for _ in mysteryTable do
+		count += 1
+	end
+	return count ~= #mysteryTable
 end
 
 --[=[
@@ -268,15 +261,15 @@ end
 	@return string
 ]=]
 function TableKit.ToString(obj: { [any]: any }): string
-	local str = ""
+	local result = {}
 	for key, value in obj do
 		local stringifiedKey = tostring(key)
 		local stringifiedValue = tostring(value)
 
 		local newline = string.format("[%*]: %*\n", stringifiedKey, stringifiedValue)
-		str ..= newline
+		table.insert(result, newline)
 	end
-	return str
+	return table.concat(result)
 end
 
 --[=[
@@ -293,23 +286,20 @@ end
 	@return { [number]: any }
 ]=]
 function TableKit.From(value: any): { [number]: any }
-	if typeof(value) == "string" then
-		local arr = {}
-		for i = 1, string.len(value) do
-			table.insert(arr, string.sub(value, i, i))
-		end
-		return arr
-	elseif typeof(value) == "Color3" then
+	local valueType = typeof(value)
+	if valueType == "string" then
+		return string.split(value, "")
+	elseif valueType == "Color3" then
 		return { value.R, value.G, value.B }
-	elseif typeof(value) == "Vector2" then
+	elseif valueType == "Vector2" then
 		return { value.X, value.Y }
-	elseif typeof(value) == "Vector3" then
+	elseif valueType == "Vector3" then
 		return { value.X, value.Y, value.Z }
-	elseif typeof(value) == "NumberSequence" then
+	elseif valueType == "NumberSequence" then
 		return value.Keypoints
-	elseif typeof(value) == "Vector3int16" then
+	elseif valueType == "Vector3int16" then
 		return { value.X, value.Y, value.Z }
-	elseif typeof(value) == "Vector2int16" then
+	elseif valueType == "Vector2int16" then
 		return { value.X, value.Y }
 	else
 		return { value }
@@ -320,9 +310,19 @@ end
 	Creates a shallow copy of an array, passed through a filter callback- if the callback returns false, the element is removed.
 	
 	```lua
-	local str = "Test"
+	local str = {"a", "b", "c", "d", "e", "f", "g"}
 	
-	print(TableKit.From(str)) -- prints ("T", "e", "s", t")
+	print(TableKit.Filter(str, function(value)
+		if value > "c" then
+			
+		end
+	end))
+	-- prints {
+ 		[1] = "d",
+ 		[2] = "e",
+ 		[3] = "f",
+ 		[4] = "g"
+ 	}
 	```
 
 	@within TableKit
@@ -374,7 +374,7 @@ end
 	local Deep = {"a", {"b"}}
 	
 	print(TableKit.IsFlat(Shallow)) -- prints true
-	print(TableKit.IsFlat(Deep)) -- prints true
+	print(TableKit.IsFlat(Deep)) -- prints false
 	```
 	
 	@within TableKit
@@ -407,7 +407,7 @@ end
 	@param callback (value) -> boolean
 	@return boolean
 ]=]
-function TableKit.Every<T>(array: { [number]: value }, callback: (value) -> boolean): (boolean, number)
+function TableKit.Every<T>(array: {any}, callback: (any) -> boolean): (boolean, number?)
 	for index, value in array do
 		if not callback(value) then
 			return false, index
