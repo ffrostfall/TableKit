@@ -313,9 +313,7 @@ end
 	local str = {"a", "b", "c", "d", "e", "f", "g"}
 	
 	print(TableKit.Filter(str, function(value)
-		if value > "c" then
-			
-		end
+		return value > "c"
 	end))
 	-- prints {
  		[1] = "d",
