@@ -480,4 +480,4 @@ function TableKit.IsEmpty(mysteryTable: { [any]: any })
 	return next(mysteryTable) == nil
 end
 
-return TableKit
+return table.freeze(TableKit)
