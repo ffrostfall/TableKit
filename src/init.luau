@@ -266,10 +266,10 @@ function TableKit.ToString(obj: { [any]: any }): string
 		local stringifiedKey = tostring(key)
 		local stringifiedValue = tostring(value)
 
-		local newline = string.format("[%*]: %*\n", stringifiedKey, stringifiedValue)
+		local newline = string.format("[%*]: %*", stringifiedKey, stringifiedValue)
 		table.insert(result, newline)
 	end
-	return table.concat(result)
+	return table.concat(result, "\n")
 end
 
 --[=[
