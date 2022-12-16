@@ -387,7 +387,7 @@ function TableKit.IsFlat(tbl: { [unknown]: unknown }): boolean
 end
 
 --[=[
-	Loops through every single element, and puts it through a callback. If unknown of the conditions return false, the function returns false.
+	Loops through every single element, and puts it through a callback. If any of the conditions return false, the function returns false.
 	
 	```lua
 	local array = {1, 2, 3, 4, 5}
