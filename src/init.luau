@@ -24,11 +24,11 @@ local TableKit = {}
 	@param tableToClone table
 	@return table
 ]=]
-function TableKit.DeepCopy<T>(tableToClone): T
+function TableKit.DeepCopy<T>(tableToClone: { [unknown]: unknown }): T
 	local clone = table.clone(tableToClone)
 	for index, value in clone do
 		if type(value) == "table" then
-			clone[index] = TableKit.DeepCopy(value)
+			clone[index] = TableKit.DeepCopy(value:: { [unknown]: unknown })
 		end
 	end
 	return clone
@@ -60,7 +60,7 @@ end
 	@param dictionary2 table
 	@return table
 ]=]
-function TableKit.MergeDictionary<dictionary1, dictionary2>(dictionary1: {}, dictionary2: {}): dictionary1 & dictionary2
+function TableKit.MergeDictionary<dictionary1, dictionary2>(dictionary1: { [unknown]: unknown }, dictionary2: { [unknown]: unknown }): dictionary1 & dictionary2
 	local newTable = table.clone(dictionary1)
 
 	for key, value in dictionary2 do
@@ -87,7 +87,7 @@ end
 	@param dictionary table
 	@return table
 ]=]
-function TableKit.Keys<T>(dictionary: { [T]: any }): { T }
+function TableKit.Keys<T>(dictionary: { [T]: unknown }): { T }
 	local keyArray = {}
 
 	for key in dictionary do
@@ -114,7 +114,7 @@ end
 	@param dictionary table
 	@return table
 ]=]
-function TableKit.Values<T>(dictionary: { [any]: T }): { T }
+function TableKit.Values<T>(dictionary: { [unknown]: T }): { T }
 	local valueArray = {}
 
 	for _, value in dictionary do
@@ -139,7 +139,7 @@ end
 	@param array2 table
 	@return table
 ]=]
-function TableKit.MergeArrays(a, b)
+function TableKit.MergeArrays<a, b>(a: {unknown}, b: {unknown}): a & b
 	local result = table.clone(a)
 	table.move(b, 1, #b, #result + 1, result)
 	return result
@@ -171,18 +171,18 @@ end
 	@param reconcile table
 	@return table
 ]=]
-function TableKit.Reconcile<T>(original: { [any]: any }, reconcile: T): T
+function TableKit.Reconcile(original: { [unknown]: unknown }, reconcile: { [unknown]: any })
 	local tbl = table.clone(original)
 
 	for key, value in reconcile do
 		if tbl[key] == nil then
-			if typeof(value) == "table" then
+			if type(value) == "table" then
 				tbl[key] = TableKit.DeepCopy(value)
 			else
 				tbl[key] = value
 			end
-		elseif typeof(reconcile[key]) == "table" then
-			if typeof(value) == "table" then
+		elseif type(reconcile[key]) == "table" then
+			if type(value) == "table" then
 				tbl[key] = TableKit.Reconcile(value, reconcile[key])
 			else
 				tbl[key] = TableKit.DeepCopy(reconcile[key])
@@ -207,7 +207,7 @@ end
 	@param mysteryTable table
 	@return boolean
 ]=]
-function TableKit.IsArray(mysteryTable: { [any]: any }): boolean
+function TableKit.IsArray(mysteryTable: { [unknown]: unknown }): boolean
 	local count = 0
 	for _ in mysteryTable do
 		count += 1
@@ -229,7 +229,7 @@ end
 	@param mysteryTable table
 	@return boolean
 ]=]
-function TableKit.IsDictionary(mysteryTable: { [any]: any }): boolean
+function TableKit.IsDictionary(mysteryTable: { [unknown]: unknown }): boolean
 	local count = 0
 	for _ in mysteryTable do
 		count += 1
@@ -258,7 +258,7 @@ end
 	@param obj {}
 	@return string
 ]=]
-function TableKit.ToString(obj: { [any]: any }): string
+function TableKit.ToString(obj: { [unknown]: unknown }): string
 	local result = {}
 	for key, value in obj do
 		local stringifiedKey = tostring(key)
@@ -280,10 +280,10 @@ end
 	```
 
 	@within TableKit
-	@param value any
-	@return { [number]: any }
+	@param value unknown
+	@return { [number]: unknown }
 ]=]
-function TableKit.From(value: any): { [number]: any }
+function TableKit.From(value: any): { any }
 	local valueType = typeof(value)
 	if valueType == "string" then
 		return string.split(value, "")
@@ -322,9 +322,9 @@ end
 	```
 
 	@within TableKit
-	@param arr { [number]: any }
+	@param arr { [number]: unknown }
 	@param callback (value: value) -> boolean
-	@return { [number]: any }
+	@return { [number]: unknown }
 ]=]
 function TableKit.Filter<T>(arr: { [number]: T }, callback: (value: T) -> boolean)
 	local tbl = {}
@@ -349,12 +349,12 @@ end
 	```
 	
 	@within TableKit
-	@param arr {}
+	@param tbl table
 	@param callback (value) -> boolean
 	@return boolean
 ]=]
-function TableKit.Some(arr: { [any]: any }, callback: (value: any) -> boolean): boolean
-	for _, value in arr do
+function TableKit.Some(tbl: { [unknown]: unknown }, callback: (value: unknown) -> boolean): boolean
+	for _, value in tbl do
 		if callback(value) == true then
 			return true
 		end
@@ -377,9 +377,9 @@ end
 	@param tbl table
 	@return boolean
 ]=]
-function TableKit.IsFlat(tbl: { [any]: any }): boolean
+function TableKit.IsFlat(tbl: { [unknown]: unknown }): boolean
 	for _, v in tbl do
-		if typeof(v) == "table" then
+		if type(v) == "table" then
 			return false
 		end
 	end
@@ -387,7 +387,7 @@ function TableKit.IsFlat(tbl: { [any]: any }): boolean
 end
 
 --[=[
-	Loops through every single element, and puts it through a callback. If any of the conditions return false, the function returns false.
+	Loops through every single element, and puts it through a callback. If unknown of the conditions return false, the function returns false.
 	
 	```lua
 	local array = {1, 2, 3, 4, 5}
@@ -399,14 +399,14 @@ end
 	```
 	
 	@within TableKit
-	@param array {}
+	@param tbl table
 	@param callback (value) -> boolean
 	@return boolean
 ]=]
-function TableKit.Every<T>(array: {any}, callback: (any) -> boolean): (boolean, number?)
-	for index, value in array do
+function TableKit.Every<T>(tbl: { [unknown]: unknown }, callback: (unknown) -> boolean): (boolean, unknown?)
+	for key, value in tbl do
 		if not callback(value) then
-			return false, index
+			return false, key
 		end
 	end
 	return true
@@ -428,10 +428,10 @@ end
 	
 	@within TableKit
 	@param dictionary table
-	@param key any
+	@param key unknown
 	@return boolean
 ]=]
-function TableKit.HasKey<T>(dictionary: { [T]: any }, key: T)
+function TableKit.HasKey<T>(dictionary: { [T]: unknown }, key: T)
 	return dictionary[key] ~= nil
 end
 
@@ -446,10 +446,10 @@ end
 	
 	@within TableKit
 	@param tbl table
-	@param value any
+	@param value unknown
 	@return boolean
 ]=]
-function TableKit.HasValue(tbl: { [any]: any }, value: any)
+function TableKit.HasValue(tbl: { [unknown]: unknown }, value: unknown)
 	for _, v in tbl do
 		if v == value then
 			return true
@@ -472,7 +472,7 @@ end
 	@param mysteryTable table
 	@return boolean
 ]=]
-function TableKit.IsEmpty(mysteryTable: { [any]: any })
+function TableKit.IsEmpty(mysteryTable: { [unknown]: unknown })
 	return next(mysteryTable) == nil
 end
 
