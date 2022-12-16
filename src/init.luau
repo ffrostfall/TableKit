@@ -29,8 +29,6 @@ function TableKit.DeepCopy<T>(tableToClone): T
 	for index, value in clone do
 		if type(value) == "table" then
 			clone[index] = TableKit.DeepCopy(value)
-		else
-			clone[index] = value
 		end
 	end
 	return clone
