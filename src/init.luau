@@ -17,7 +17,7 @@ local TableKit = {}
 		},
 	}
 	
-	local CopiedDictionary = TableKit.DeepCopy(Dictionary, SecondDictionary)
+	local CopiedDictionary = TableKit.DeepCopy(Dictionary)
 	
 	print(CopiedDictionary) -- prints { ["SomethingInside"] = { ["A"] = 1, ["B"] = 1 } }
 	```
