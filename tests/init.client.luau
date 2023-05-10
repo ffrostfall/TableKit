@@ -36,7 +36,7 @@ local Empty = {}
 print("---------------------------------------")
 print("Merges:")
 local dictionaryMerged = TableKit.MergeDictionary(DictionaryA, DictionaryB)
-local arrayMerged = TableKit.MergeArray(ArrayA, ArrayB)
+local arrayMerged = TableKit.MergeArrays(ArrayA, ArrayB)
 print(dictionaryMerged)
 print(arrayMerged)
 print("---------------------------------------")
