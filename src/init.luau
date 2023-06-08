@@ -1,5 +1,3 @@
-type unknown = any -- rlsp moment
-
 local TableKit = {}
 
 --[=[
@@ -119,7 +117,7 @@ end
 	@param dictionary table
 	@return table
 ]=]
-function TableKit.Values<T>(dictionary: { [unknown]: T }): T
+function TableKit.Values<T>(dictionary: { [unknown]: T }): { T }
 	local valueArray = {}
 
 	for _, value in dictionary do
@@ -281,7 +279,7 @@ function TableKit.ToString(obj: { [unknown]: unknown }): string
 			stringifiedValue = valueToString
 		end
 
-		local newline = `[{stringifiedKey}] = {stringifiedValue}`
+		local newline = `\t[{stringifiedKey}] = {stringifiedValue}`
 		table.insert(result, newline)
 	end
 	return "{\n" .. table.concat(result, "\n") .. "\n}"
