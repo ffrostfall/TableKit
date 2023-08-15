@@ -211,11 +211,10 @@ end
 	@return boolean
 ]=]
 function TableKit.IsArray(mysteryTable: { [unknown]: unknown }): boolean
-	local count = 0
-	for _ in mysteryTable do
-		count += 1
+	if mysteryTable[1] then
+		return true
 	end
-	return count == #mysteryTable
+	return false
 end
 
 --[=[
