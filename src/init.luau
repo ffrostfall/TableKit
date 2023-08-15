@@ -273,7 +273,7 @@ function TableKit.ToString(obj: { [unknown]: unknown }): string
 
 		local stringifiedValue
 		local valueToString = tostring(value)
-		if typeof(key) == "string" then
+		if typeof(value) == "string" then
 			stringifiedValue = `"{valueToString}"`
 		else
 			stringifiedValue = valueToString
