@@ -275,13 +275,13 @@ function TableKit.ToString(obj: { [any]: any }): string
 
 		local stringifiedValue
 		local valueToString = tostring(value)
-		if typeof(key) == "string" then
+		if typeof(value) == "string" then
 			stringifiedValue = `"{valueToString}"`
 		else
 			stringifiedValue = valueToString
 		end
 
-		local newline = `[{stringifiedKey}] = {stringifiedValue}`
+		local newline = `\t[{stringifiedKey}] = {stringifiedValue}`
 		table.insert(result, newline)
 	end
 	return "{\n" .. table.concat(result, "\n") .. "\n}"

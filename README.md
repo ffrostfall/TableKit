@@ -2,6 +2,9 @@
 TableKit is a *kit* of functions to help manipulate & utilize tables more effectively. It contains various functions that have
 real-world use cases such as .Reconcile(), .DeepCopy(), .Unshift(), etc.
 
+## Documentation
+https://ffrostflame.github.io/TableKit/
+
 ## Why?
 I made this project primarily because there were no up-to-date & high quality table manipulation libraries out there. None suited my needs-
 I wanted something I could plug in with Wally, something fully typed, and using modern-day Luau functions. This doesn't exist.
